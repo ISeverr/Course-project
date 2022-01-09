@@ -1,8 +1,8 @@
 import {Button, Col, Container, Form, Row} from "react-bootstrap";
 import {useContext, useState} from "react";
-import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword} from "firebase/auth";
+import {createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword} from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
-import {AppContext} from "../../context/AppContext";
+import {AuthContext} from "../../hoc/AuthProvider";
 //import {authReducer, initialState} from "../../reducers/userReducer";
 
 const AuthForm = () => {
@@ -11,15 +11,13 @@ const AuthForm = () => {
     email: '',
     password: ''
   });
-
-  const {auth} = useContext(AppContext)
   const {email, password} = form;
-
+  const {auth} = useContext(AuthContext);
 
   const registration = () => {
     createUserWithEmailAndPassword(auth, email, password)
-      .then(({user}) => {
-
+      .then((userCredential) => {
+        const user = userCredential.user;
         console.log(user)
         navigate('/');
       })
@@ -34,9 +32,8 @@ const AuthForm = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        // navigate('/');
+        navigate('/');
         console.log(user)
-
       })
       .catch((error) => {
         console.log(error.code);
