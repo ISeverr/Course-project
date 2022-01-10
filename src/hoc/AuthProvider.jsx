@@ -1,7 +1,6 @@
-import {createContext, useContext} from "react";
+import {createContext, useContext, useState} from "react";
 import {getAuth, signOut} from "firebase/auth";
-import {useAuthState} from "react-firebase-hooks/auth";
-import {useLocation} from "react-router-dom";
+
 
 export const AuthContext = createContext(null);
 

@@ -21,13 +21,18 @@ const NavBar = () => {
   return (
     <Navbar bg="light" expand="lg">
       <Container>
-        <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand>
+        <Nav.Link><Link to="/">Home</Link></Nav.Link>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             {user ?
+              (
+                <>
+                  <Button onClick={logout} >Log Out</Button>
+                  <Link to="/user-page">User page</Link>
+                </>
 
-              <Button onClick={logout} >Log Out</Button>
+              )
             :
               <Nav.Link><Link to="/authorization">Authorization</Link></Nav.Link>
             }

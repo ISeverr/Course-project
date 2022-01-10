@@ -6,11 +6,16 @@ import Layout from "../components/layout/Layout";
 import UserPage from "../components/userPage/UserPage";
 import NotFoundPage from "../components/notFoundPage/NotFoundPage";
 import RequireAuth from "../hoc/requireAuth";
-import {AuthProvider} from "../hoc/AuthProvider";
+import {AuthContext, AuthProvider} from "../hoc/AuthProvider";
+import {useContext} from "react";
+import {useAuthState} from "react-firebase-hooks/auth";
+import {getAuth} from "firebase/auth";
 
 
 const App = () => {
-
+  const auth = getAuth()
+  //const {auth} = useContext(AuthContext)
+  const [user] = useAuthState(auth)
 
   return (
     <AuthProvider>
@@ -18,10 +23,10 @@ const App = () => {
         <Route path="/" element={<Layout/>}>
           <Route index element={<HomePage/>}/>
           <Route path="authorization" element={<AuthForm/>}/>
-          <Route path="user-page" element={
-            <RequireAuth>
-              <UserPage/>
-            </RequireAuth>} />
+          { user
+            ? <Route path="user-page" element={<UserPage/>}/>
+            : <Route path="*" element={<NotFoundPage/>} />
+          }
           <Route path="*" element={<NotFoundPage/>} />
         </Route>
       </Routes>

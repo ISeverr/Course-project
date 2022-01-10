@@ -7,11 +7,12 @@ import {AuthContext} from "./AuthProvider";
 
 const RequireAuth = ({children}) => {
   //const location = useLocation();
-  const {auth} = useContext(AuthContext);
-  const [user] = useAuthState(auth);
-  console.log(user)
+
+
+
+  //console.log(user)
     const test = true
-  if(!test) {
+  if(!true) {
     return  <Navigate to="/authorization" />
   }
 

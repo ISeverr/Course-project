@@ -1,8 +1,11 @@
 import {Button, Col, Container, Form, Row} from "react-bootstrap";
 import {useContext, useState} from "react";
-import {createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword} from "firebase/auth";
+import {createUserWithEmailAndPassword, signInWithEmailAndPassword} from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
 import {AuthContext} from "../../hoc/AuthProvider";
+import {database} from "../../firebase";
+import {doc, setDoc} from "@firebase/firestore";
+import {useAuthState} from "react-firebase-hooks/auth";
 //import {authReducer, initialState} from "../../reducers/userReducer";
 
 const AuthForm = () => {
@@ -14,31 +17,56 @@ const AuthForm = () => {
   const {email, password} = form;
   const {auth} = useContext(AuthContext);
 
-  const registration = () => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log(user)
-        navigate('/');
-      })
-      .catch((error) => {
-        console.log(error.code);
-        console.log(error.message);
+  const registration = async () => {
+    try {
+      const response = await createUserWithEmailAndPassword(auth, email, password);
+      const {user} = response;
+      // await setDoc(doc(database, "users", user.uid ), {
+      //   userUid: user.uid,
+      //   setDoc(doc())
+      // });
+      navigate("/")
+      console.log(database)
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
 
-      });
+    // createUserWithEmailAndPassword(auth, email, password)
+    //   .then((userCredential) => {
+    //     console.log(user)
+    //     navigate('/');
+    //   })
+    //   .catch((error) => {
+    //     console.log(error.code);
+    //     console.log(error.message);
+    //
+    //   });
   };
 
-  const login =  () => {
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        navigate('/');
-        console.log(user)
-      })
-      .catch((error) => {
-        console.log(error.code);
-        console.log(error.message);
-      });
+  const login = async () => {
+    try {
+      const response = await signInWithEmailAndPassword(auth, email, password);
+      const {user} = response;
+
+      navigate('/')
+      console.log(user);
+    }
+    catch (error) {
+      console.error(error);
+      alert(error.message);
+    }
+
+  //   signInWithEmailAndPassword(auth, email, password)
+  //     .then((userCredential) => {
+  //       const user = userCredential.user;
+  //       navigate('/');
+  //       console.log(user)
+  //     })
+  //     .catch((error) => {
+  //       console.log(error.code);
+  //       console.log(error.message);
+  //     });
   }
 
 
