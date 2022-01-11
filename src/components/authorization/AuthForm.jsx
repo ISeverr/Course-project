@@ -21,12 +21,13 @@ const AuthForm = () => {
     try {
       const response = await createUserWithEmailAndPassword(auth, email, password);
       const {user} = response;
-      // await setDoc(doc(database, "users", user.uid ), {
-      //   userUid: user.uid,
-      //   setDoc(doc())
-      // });
-      navigate("/")
-      console.log(database)
+       await setDoc(doc(database, "users", user.uid ),
+         {
+         userUid: user.uid
+         }
+       );
+      navigate("/");
+      console.log(user);
     } catch (err) {
       console.error(err);
       alert(err.message);
@@ -48,9 +49,7 @@ const AuthForm = () => {
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
       const {user} = response;
-
       navigate('/')
-      console.log(user);
     }
     catch (error) {
       console.error(error);
@@ -68,6 +67,8 @@ const AuthForm = () => {
   //       console.log(error.message);
   //     });
   }
+
+  console.log(auth)
 
 
   const handlerChange = (e) => {
