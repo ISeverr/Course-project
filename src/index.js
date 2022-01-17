@@ -6,12 +6,15 @@ import App from "./app/App";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './firebase';
 import {BrowserRouter} from "react-router-dom";
+import {AuthProvider} from "./hoc/AuthProvider";
 
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
+      <AuthProvider>
       <App />
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')

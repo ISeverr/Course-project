@@ -7,15 +7,12 @@ import {AuthContext} from "../../hoc/AuthProvider";
 
 
 const NavBar = () => {
-  const {auth} = useContext(AuthContext)
-  const [user] = useAuthState(auth)
+  const {auth, logout} = useContext(AuthContext);
+  const [user] = useAuthState(auth);
 
-  const logout = () => {
-    signOut(auth).then(() => {
-    }).catch((error) => {
-      console.log(error)
-    });
-  }
+const setLogout = () => {
+  logout(auth)
+}
 
 
   return (
@@ -28,7 +25,7 @@ const NavBar = () => {
             {user ?
               (
                 <>
-                  <Button onClick={logout} >Log Out</Button>
+                  <Button onClick={setLogout} >Log Out</Button>
                   <Link to="/user-page">User page</Link>
                 </>
 

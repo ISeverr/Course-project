@@ -1,11 +1,13 @@
 import {Button, FormControl, InputGroup} from "react-bootstrap";
 import {useContext, useState} from "react";
 import {addDoc, doc, collection} from "@firebase/firestore";
-import {database} from "../../firebase";
 import {AuthContext} from "../../hoc/AuthProvider";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import { getDatabase, ref, push, set } from "firebase/database";
 
-const CreateCollection = () => {
+
+const CreateUserCollection = () => {
+  const {auth, db} = useContext(AuthContext);
   const navigate = useNavigate();
   const [form, setForm] = useState({
     name: "",
@@ -13,22 +15,24 @@ const CreateCollection = () => {
     description: ""
   });
 
-  const {auth} = useContext(AuthContext);
-  const itemsCollection = collection(database, "users", auth.currentUser.uid, "items-collection");
+  const userCollectionRef = ref(db, "collections/" + auth.currentUser.uid );
 
-    const createUserCollection = async () => {
+  const createCollection = async () => {
     try {
-      await addDoc(itemsCollection, {
+     const newCollectionRef =  await push(userCollectionRef)
+      const newCollection = await set(newCollectionRef, {
         name: form.name,
         topic: form.topic,
         description: form.description
-      });
+      })
+     console.log(newCollection)
       navigate("/user-page")
     } catch (e) {
       alert(e.message)
     }
 
-    }
+  }
+  //console.log(itemsCollection)
 
   const handlerChange = (e) => {
     setForm({...form, [e.target.name]: e.target.value});
@@ -36,6 +40,7 @@ const CreateCollection = () => {
   return (
     <>
       <InputGroup className="mb-3">
+
         <InputGroup.Text id="inputGroup-sizing-default">Name</InputGroup.Text>
         <FormControl
           aria-label="Default"
@@ -64,11 +69,12 @@ const CreateCollection = () => {
           onChange={handlerChange}
         />
       </InputGroup>
-      <Button onClick={createUserCollection}>
+      <Button onClick={createCollection}>
         Create collection
       </Button>
+
     </>
   )
 }
 
-export default CreateCollection;
+export default CreateUserCollection;

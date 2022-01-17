@@ -1,19 +1,21 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore"
+import { getDatabase } from "firebase/database";
+
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAi6-rytr33-Q0wKVfBtedAMV69YaHZelc",
-  authDomain: "project-course-v-2.firebaseapp.com",
-  projectId: "project-course-v-2",
-  storageBucket: "project-course-v-2.appspot.com",
-  messagingSenderId: "1060974440607",
-  appId: "1:1060974440607:web:3cd4a96731c4d3aa9f32aa",
-  measurementId: "G-BCLTYMZJ79"
+  apiKey: "AIzaSyBMgbU3wrWtohbrN38V1VVaWjGLP7jyAT4",
+  authDomain: "project-course-28eb2.firebaseapp.com",
+  projectId: "project-course-28eb2",
+  databaseURL: "https://project-course-28eb2-default-rtdb.europe-west1.firebasedatabase.app/",
+  storageBucket: "project-course-28eb2.appspot.com",
+  messagingSenderId: "776590484006",
+  appId: "1:776590484006:web:7725b1668d41ed5e1e7ce7",
+  measurementId: "G-DTTBX0H4BQ"
 };
 
 console.log(firebaseConfig)
 
 
 const app = initializeApp(firebaseConfig);
-export const database = getFirestore(app)
+const database = getDatabase(app)

@@ -6,9 +6,6 @@ import {AuthContext} from "./AuthProvider";
 
 
 const RequireAuth = ({children}) => {
-  //const location = useLocation();
-
-
 
   //console.log(user)
     const test = true
