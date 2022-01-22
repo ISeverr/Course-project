@@ -7,13 +7,16 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './firebase';
 import {BrowserRouter} from "react-router-dom";
 import {AuthProvider} from "./hoc/AuthProvider";
+import {CollectionProvider} from "./hoc/CollectionProvider";
 
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
+        <CollectionProvider>
       <App />
+        </CollectionProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>,

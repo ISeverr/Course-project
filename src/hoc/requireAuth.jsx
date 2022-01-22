@@ -7,7 +7,6 @@ import {AuthContext} from "./AuthProvider";
 
 const RequireAuth = ({children}) => {
 
-  //console.log(user)
     const test = true
   if(!true) {
     return  <Navigate to="/authorization" />

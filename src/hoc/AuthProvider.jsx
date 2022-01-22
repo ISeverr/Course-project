@@ -3,7 +3,8 @@ import {createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, sig
 import {collection, doc, getDocs, setDoc} from "@firebase/firestore";
 import {database} from "../firebase";
 import {useAuthState} from "react-firebase-hooks/auth";
-import { getDatabase, ref, set } from "firebase/database";
+import { getDatabase, ref, set} from "firebase/database";
+import {getStorage} from "firebase/storage";
 
 
 export const AuthContext = createContext(null);
@@ -12,6 +13,7 @@ export const AuthProvider = ({children}) => {
  const auth = getAuth();
  const {user} = getAuth()
  const db = getDatabase()
+ const storage = getStorage()
 
  const login = async (auth, email, password, navigate) => {
   try {
@@ -28,10 +30,10 @@ export const AuthProvider = ({children}) => {
   try {
    const response = await createUserWithEmailAndPassword(auth, email, password);
    const {user} = response;
-   const userCollection = await set(ref(db, "users/" + auth.currentUser.uid), {
+   const newUser = await set(ref(db, "users/" + auth.currentUser.uid ), {
    email: email,
-  })
-   console.log(userCollection)
+  });
+   console.log(newUser)
    navigate()
    console.log(user);
   } catch (err) {
@@ -50,7 +52,7 @@ export const AuthProvider = ({children}) => {
  console.log(auth)
 
 
- return <AuthContext.Provider value={{auth, login, registration, logout, user, db}}>
+ return <AuthContext.Provider value={{auth, login, registration, logout, user, db, storage}}>
     {children}
   </AuthContext.Provider>
 }

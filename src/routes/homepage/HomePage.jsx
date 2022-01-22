@@ -34,16 +34,24 @@ const HomePage = () => {
         {loading && <span>List: Loading...</span>}
         {!loading && _.map(values,(value, key)=> (
           <div key={key}>{value.id}</div>,
-          _.map(value,(item, key) => (
+          _.map(value,(collection, key) => (
             <>
               <div>Collection</div>
-              <div key={key}>name: {item.name}</div>
-              <div key={key}>description: {item.description}</div>
-              <div key={key}>topic: {item.topic}</div>
-            </>
+              <div key={key}>name: {collection.name}</div>
+              <div key={key}>description: {collection.description}</div>
+              <div key={key}>topic: {collection.topic}</div>
+            </>,
+              _.map(collection, (item, key) => (
+                <>
+                  <div>item</div>
+                  <div key={key}>name: {item.name}</div>
+                  <div key={key}>tag: {item.tag}</div>
+                  <div key={key}>value: {item.value}</div>
+                </>
+              ))
+
           ))
         ))
-
         }
       </div>
     </>

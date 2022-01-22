@@ -1,8 +1,8 @@
-import {Button, Container, Nav, Navbar} from "react-bootstrap";
+import {Button, Container, Nav, Navbar, NavItem} from "react-bootstrap";
 import {Link, NavLink} from "react-router-dom";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {useContext} from "react";
-import { signOut } from "firebase/auth";
+import {signOut} from "firebase/auth";
 import {AuthContext} from "../../hoc/AuthProvider";
 
 
@@ -10,31 +10,34 @@ const NavBar = () => {
   const {auth, logout} = useContext(AuthContext);
   const [user] = useAuthState(auth);
 
-const setLogout = () => {
-  logout(auth)
-}
+  const setLogout = () => {
+    logout(auth)
+  }
 
 
   return (
     <Navbar bg="light" expand="lg">
       <Container>
-        <Nav.Link><Link to="/">Home</Link></Nav.Link>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            {user ?
-              (
-                <>
-                  <Button onClick={setLogout} >Log Out</Button>
-                  <Link to="/user-page">User page</Link>
-                </>
-
-              )
-            :
-              <Nav.Link><Link to="/authorization">Authorization</Link></Nav.Link>
-            }
+          <Nav className="me-auto" >
+            <Nav.Link as={Link} to="/">Home</Nav.Link>
           </Nav>
-        </Navbar.Collapse>
+          <Nav>
+          {user ?
+            (
+              <>
+                <Nav.Item>
+                  <Nav.Link as={Link} to="/user-page">User page</Nav.Link>
+                </Nav.Item>
+                <Nav.Item >
+                  <Button variant="outline-secondary" onClick={setLogout}>Log Out</Button>
+                </Nav.Item>
+              </>
+            )
+            :
+            <Nav.Link as={Link} to="/authorization">Authorization</Nav.Link>
+          }
+      </Nav>
+
       </Container>
     </Navbar>
   )

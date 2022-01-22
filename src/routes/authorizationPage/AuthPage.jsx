@@ -1,12 +1,13 @@
 import {Button, Col, Container, Form, Row} from "react-bootstrap";
 import {useContext, useState} from "react";
-import {createUserWithEmailAndPassword, signInWithEmailAndPassword} from "firebase/auth";
 import {useNavigate} from 'react-router-dom';
 import {AuthContext} from "../../hoc/AuthProvider";
 import {database} from "../../firebase";
-import {doc, setDoc} from "@firebase/firestore";
-import {useAuthState} from "react-firebase-hooks/auth";
-//import {authReducer, initialState} from "../../reducers/userReducer";
+import './authPage.css'
+import {useForm} from "react-hook-form";
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const AuthPage = () => {
     email: '',
     password: ''
   });
+
   const {email, password} = form;
   const {auth, login, registration} = useContext(AuthContext);
 
@@ -31,39 +33,47 @@ const AuthPage = () => {
     setForm({...form, [e.target.name]: e.target.value});
 
   }
+
+
   return (
-    <Container>
-      <Row>
-        <Col>
-          <Form>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Email address</Form.Label>
-              <Form.Control
-                name="email"
-                type="email"
-                placeholder="Enter email"
-                onChange={handlerChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                name="password"
-                type="password"
-                placeholder="Password"
-                onChange={handlerChange}
-              />
-            </Form.Group>
-            <Button onClick={setAuth} variant="primary">
-              Registration
-            </Button>
-            <Button onClick={setLogin} variant="primary">
-              Login
-            </Button>
-          </Form>
-        </Col>
-      </Row>
-    </Container>
+      <Container className='authPage'>
+        <Row >
+          <Col>
+            <Form>
+              <Form.Group className="mb-3" controlId="formBasicEmail">
+                <Form.Label>Email address</Form.Label>
+                <Form.Control
+                  aria-required="true"
+                  name="email"
+                  type="email"
+                  placeholder="Enter email"
+                  onChange={handlerChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formBasicPassword">
+                <Form.Label>Password</Form.Label>
+                <Form.Control
+                  aria-required="true"
+                  name="password"
+                  type="password"
+                  placeholder="Password"
+                  onChange={handlerChange}
+                />
+              </Form.Group>
+              <Button
+                className='me-2'
+                onClick={setAuth}
+                variant="primary"
+              >
+                Registration
+              </Button>
+              <Button onClick={setLogin} variant="primary">
+                Login
+              </Button>
+            </Form>
+          </Col>
+        </Row>
+      </Container>
   )
 }
 
