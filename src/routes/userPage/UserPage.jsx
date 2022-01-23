@@ -5,26 +5,26 @@ import {AuthContext} from "../../hoc/AuthProvider";
 import {ref, remove, child} from 'firebase/database';
 import {useListKeys, useListVals, useObjectVal} from "react-firebase-hooks/database";
 import _ from "lodash";
-import {Button, Card, Col, Nav, Row} from "react-bootstrap";
-import CreateUserCollection from "./CreateUserCollection";
+import {Button, Card, Col, Nav, Row, Stack} from "react-bootstrap";
+import CreateCollection from "./modals/CreateCollection";
+import {ref as sRef, deleteObject} from "firebase/storage";
+
 
 const UserPage = () => {
-  const {auth, db} = useContext(AuthContext);
+  const {auth, db, storage} = useContext(AuthContext);
   const navigate = useNavigate();
   const [checkCollectionForm, setCheckCollectionForm] = useState({})
-  const [collections, loading, error] = useListVals(ref(db, 'collections/' + auth.currentUser.uid ), {
+  const [collections, loading, error] = useListVals(ref(db, 'collections/' + auth.currentUser.uid), {
     keyField: "collectionKey"
-  })
+  });
+  const [editCollection, setEditCollection] = useState(null)
 
-
-
-  //const test = child(ref(db), auth.currentUser.uid)
-  console.log(collections);
-
-  const deleteCollection = async (collectionId) => {
+  const deleteCollection = async (data) => {
     try {
-      const userCollectionRef = ref(db, "collections/" + auth.currentUser.uid + "/" + collectionId);
-      await remove(userCollectionRef)
+      const userCollectionRef = ref(db, `collections/${auth.currentUser.uid}/${data.collectionKey}`);
+      await remove(userCollectionRef);
+      const imageRef = sRef(storage, `images/${data.info.imageName}`);
+      await deleteObject(imageRef)
     } catch (e) {
       alert(e.message)
     }
@@ -32,48 +32,73 @@ const UserPage = () => {
 
   const visionOfCollectionForm = () => {
     setCheckCollectionForm({edited: true})
+    setEditCollection(null)
   };
 
-  console.log(collections)
+  const edit = (collectionKey) => {
+    visionOfCollectionForm();
+    setEditCollection(collectionKey);
+  };
+
   return (
     <>
       <Nav className="justify-content-center my-3">
         <Button onClick={() => visionOfCollectionForm()}>Create collection</Button>
         {checkCollectionForm.edited
           ?
-          <CreateUserCollection
+          <CreateCollection
             setCheckCollectionForm={setCheckCollectionForm}
+            editCollection={editCollection}
           />
           : null
         }
       </Nav>
-      <Row xs={1} md={2} xl={3} className="g-4 mx-4 ">
-
+      <Row xs={1} md={2} xl={3} className="g-4 mx-4">
         {error && <strong>Error: {error}</strong>}
         {loading && <span>List: Loading...</span>}
-        {!loading && _.map(collections, (collection, key) => (
-            <Col key={key}>
-              <Card className="mx-3" border="dark" style={{width: '20rem'}}>
-                <Card.Img variant="top" src={collection.info.image} alt="..."/>
-                <Card.Body>
-                  <Card.Title >{collection.info.CollectionName}</Card.Title>
-                  <Card.Header >{collection.info.topic}</Card.Header>
-                  <Card.Text >{collection.info.description}</Card.Text>
-                  <Button className="me-2" variant="outline-info" onClick={() => navigate("/user-page/create-collection/items",
+        {!loading && _.map(collections, (collection) => (
+          <Col key={collection.collectionKey}>
+            <Card
+              className="mx-3"
+              border="dark"
+              style={{maxWidth: '20rem'}}
+            >
+              <Card.Img
+                variant="top"
+                style={{maxHeight: '20rem'}}
+                className="img-thumbnail"
+                src={collection.info.imageURL}
+                alt="..."
+              />
+              <Card.Body>
+                <Card.Title>{collection.info.CollectionName}</Card.Title>
+                <Card.Header>{collection.info.topic}</Card.Header>
+                <Card.Text>{collection.info.description}</Card.Text>
+                <Button
+                  className="me-2"
+                  variant="outline-info"
+                  onClick={() => navigate("/user-page/create-collection/items",
                     {
                       state: collection.collectionKey
                     })}>
-                    View collection
-                  </Button>
-                  <Button
-                    variant="danger"
-                    onClick={() => deleteCollection(collection.collectionKey)}>
-                    Delete collection
-                  </Button>
-
-                </Card.Body>
-              </Card>
-            </Col>
+                  View collection
+                </Button>
+                <Button
+                  variant="outline-warning"
+                  onClick={() => edit(collection.collectionKey)}
+                >
+                  Edit collection
+                </Button>
+              </Card.Body>
+              <Stack className="col-md-6 mx-auto mb-3">
+                <Button
+                  variant="outline-danger"
+                  onClick={() => deleteCollection(collection)}>
+                  Delete collection
+                </Button>
+              </Stack>
+            </Card>
+          </Col>
         ))}
       </Row>
     </>

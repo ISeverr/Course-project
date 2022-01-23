@@ -2,36 +2,21 @@ import {createContext, useReducer} from "react";
 import {getAuth} from "firebase/auth";
 import {getDatabase, push, ref, set} from "firebase/database";
 import {AuthContext} from "./AuthProvider";
-const initialState = {}
-export const CollectionContext = createContext(initialState);
+import {ref as sRef, uploadBytes} from "firebase/storage";
+export const CollectionContext = createContext(null);
 
 export  const CollectionProvider = ({children}) => {
+  const imageTypes = ["JPG", "PNG", "GIF"];
 
-  // const addCollection = async (userCollectionRef, form, navigate) => {
-  //   try {
-  //     const newCollectionKey = push(userCollectionRef).key
-  //     const newCollectionRef = await push(userCollectionRef)
-  //     console.log(newCollectionKey);
-  //     await set(newCollectionRef, {
-  //       name: form.name,
-  //       topic: form.topic,
-  //       description: form.description
-  //     })
-  //     navigate()
-  //   } catch (e) {
-  //     alert(e.message)
-  //   }
-  //
-  // }
+  const  imageId = () => {
+    let text = "";
+    let possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+    for (let i = 0; i < 17; i++)
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    return text;
+  };
 
-  const collectionKey = (userCollectionRef) => {
-    const newCollectionKey =   push(userCollectionRef).key;
-    console.log(collectionKey)
-
-  }
-
-
-  return <CollectionContext.Provider value={{collectionKey}}>
+return <CollectionContext.Provider value={{imageId, imageTypes}}>
     {children}
   </CollectionContext.Provider>
 }

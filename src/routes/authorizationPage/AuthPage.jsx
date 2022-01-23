@@ -19,21 +19,17 @@ const AuthPage = () => {
   const {email, password} = form;
   const {auth, login, registration} = useContext(AuthContext);
 
-  console.log(auth)
-
   const setLogin = () => {
     login(auth, email, password, ()=>navigate("/", {replace: true}))
-  }
+  };
 
   const setAuth = () => {
     registration(auth, email, password, ()=>navigate("/", {replace: true}))
-  }
+  };
 
   const handlerChange = (e) => {
     setForm({...form, [e.target.name]: e.target.value});
-
-  }
-
+  };
 
   return (
       <Container className='authPage'>

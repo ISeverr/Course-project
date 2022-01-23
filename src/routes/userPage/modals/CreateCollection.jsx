@@ -1,18 +1,20 @@
 import {Button, Col, Container, Form, FormControl, InputGroup, Modal, Row} from "react-bootstrap";
 import {useContext, useEffect, useState} from "react";
-import {AuthContext} from "../../hoc/AuthProvider";
-import { useNavigate} from "react-router-dom";
-import { ref, push, set, child} from "firebase/database";
-import { FileUploader } from "react-drag-drop-files";
-import {  uploadBytes, ref as sRef } from "firebase/storage";
+import {AuthContext} from "../../../hoc/AuthProvider";
+import {useNavigate} from "react-router-dom";
+import {ref, push, set, child} from "firebase/database";
+import {FileUploader} from "react-drag-drop-files";
+import {uploadBytes, ref as sRef} from "firebase/storage";
 import {useDownloadURL} from "react-firebase-hooks/storage";
+import {CollectionContext} from "../../../hoc/CollectionProvider";
 
 
-const CreateUserCollection = ({setCheckCollectionForm}) => {
+const CreateCollection = ({setCheckCollectionForm, editCollection}) => {
+  //console.log(editCollection)
   const {auth, db, storage} = useContext(AuthContext);
+  const {imageId, fileTypes} = useContext(CollectionContext);
   const [image, setImage] = useState(null);
   const [checkImage, setCheckImage] = useState(false)
-  const navigate = useNavigate();
   const [imageName, setImageName] = useState("");
   const [form, setForm] = useState({
     name: "",
@@ -20,9 +22,23 @@ const CreateUserCollection = ({setCheckCollectionForm}) => {
     description: ""
   });
   const [value] = useDownloadURL(sRef(storage, `images/${imageName}`));
-  const fileTypes = ["JPG", "PNG", "GIF"];
-  const userCollectionRef = ref(db, "collections/" + auth.currentUser.uid );
-  const newCollectionRef = push(userCollectionRef);
+  const userCollectionRef = ref(db, `collections/${auth.currentUser.uid}`);
+  const newCollectionRef = editCollection
+    ? ref(db, `collections/${auth.currentUser.uid}/${editCollection}`)
+    : push(userCollectionRef);
+
+  const handlerChange = (e) => {
+    setForm({...form, [e.target.name]: e.target.value});
+  };
+
+  const imageHandlerChange = async (image,) => {
+    setImage(image);
+    image ? setCheckImage(true) : setCheckImage(false);
+    const imageRef = await sRef(storage, `images/${imageId()}`);
+    uploadBytes(imageRef, image).then((snapshot) => {
+      setImageName(snapshot.metadata.name);
+    });
+  };
 
   const createCollection = async () => {
     try {
@@ -31,40 +47,20 @@ const CreateUserCollection = ({setCheckCollectionForm}) => {
           CollectionName: form.CollectionName,
           topic: form.topic,
           description: form.description,
-          image: value,
+          imageURL: value,
+          imageName: imageName,
         }
       });
       setCheckCollectionForm({edited: false});
     } catch (e) {
       alert(e.message)
     }
-
   };
 
   const handleClose = () => {
     setCheckCollectionForm({edited: false});
+    console.log(setCheckCollectionForm)
     console.log("close")
-  };
-
-  const handlerChange = (e) => {
-    setForm({...form, [e.target.name]: e.target.value});
-  };
-
-  const  imageId = () => {
-    let text = "";
-    let possible = "abcdefghijklmnopqrstuvwxyz0123456789";
-    for (let i = 0; i < 17; i++)
-      text += possible.charAt(Math.floor(Math.random() * possible.length));
-    return text;
-  };
-
-  const imageHandlerChange = async (image) => {
-    setImage(image);
-    image ? setCheckImage(true) : setCheckImage(false);
-    const imageRef = await sRef(storage, `images/${imageId()}`);
-    uploadBytes(imageRef, image).then((snapshot) => {
-      setImageName(snapshot.metadata.name);
-    });
   };
 
   return (
@@ -88,7 +84,7 @@ const CreateUserCollection = ({setCheckCollectionForm}) => {
                   disabled={checkImage}
                   types={fileTypes}
                 />
-                <InputGroup className="mb-3" hasValidation>
+                <InputGroup className="mb-3">
                   <FormControl
                     aria-label="Default"
                     aria-describedby="inputGroup-sizing-default"
@@ -102,7 +98,7 @@ const CreateUserCollection = ({setCheckCollectionForm}) => {
             </Row>
             <Row>
               <Col>
-                <InputGroup className="mb-3" hasValidation>
+                <InputGroup className="mb-3">
                   <FormControl
                     aria-label="Default"
                     aria-describedby="inputGroup-sizing-default"
@@ -114,9 +110,9 @@ const CreateUserCollection = ({setCheckCollectionForm}) => {
                 </InputGroup>
               </Col>
             </Row>
-              <Row>
-                <Col>
-                  <InputGroup className="mb-3" hasValidation>
+            <Row>
+              <Col>
+                <InputGroup className="mb-3" hasValidation>
                   <FormControl
                     aria-label="Default"
                     aria-describedby="inputGroup-sizing-default"
@@ -125,7 +121,7 @@ const CreateUserCollection = ({setCheckCollectionForm}) => {
                     placeholder="Enter collection description"
                     onChange={handlerChange}
                   />
-                  </InputGroup>
+                </InputGroup>
               </Col>
             </Row>
           </Container>
@@ -138,73 +134,6 @@ const CreateUserCollection = ({setCheckCollectionForm}) => {
       </Modal>
     </>
   )
-
-  {/*<InputGroup className="mb-3">*/
-  }
-
-  {/*  <InputGroup.Text id="inputGroup-sizing-default">Name</InputGroup.Text>*/
-  }
-  {/*  <FormControl*/
-  }
-  {/*    aria-label="Default"*/
-  }
-  {/*    aria-describedby="inputGroup-sizing-default"*/
-  }
-  {/*    name="name"*/
-  }
-  {/*    type="text"*/
-  }
-  {/*    placeholder="Enter name"*/
-  }
-  {/*    onChange={handlerChange}*/
-  }
-  {/*  />*/
-  }
-  {/*  <InputGroup.Text id="inputGroup-sizing-default">Topic</InputGroup.Text>*/
-  }
-  {/*  <FormControl*/
-  }
-  {/*    aria-label="Default"*/
-  }
-  {/*    aria-describedby="inputGroup-sizing-default"*/
-  }
-  {/*    name="topic"*/
-  }
-  {/*    type="text"*/
-  }
-  {/*    placeholder="Enter topic"*/
-  }
-  {/*    onChange={handlerChange}*/
-  }
-  {/*  />*/
-  }
-  {/*  <InputGroup.Text id="inputGroup-sizing-default">Description</InputGroup.Text>*/
-  }
-  {/*  <FormControl*/
-  }
-  {/*    aria-label="Default"*/
-  }
-  {/*    aria-describedby="inputGroup-sizing-default"*/
-  }
-  {/*    name="description"*/
-  }
-  {/*    type="text"*/
-  }
-  {/*    placeholder="Enter description"*/
-  }
-  {/*    onChange={handlerChange}*/
-  }
-  {/*  />*/
-  }
-  {/*</InputGroup>*/
-  }
-  {/*<Button onClick={createCollection}>*/
-  }
-  {/*  Create collection*/
-  }
-  {/*</Button>*/
-  }
-
 }
 
-export default CreateUserCollection;
+export default CreateCollection;

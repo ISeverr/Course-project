@@ -1,16 +1,18 @@
 import {Button, Col, Container, FormControl, InputGroup, Modal, Row} from "react-bootstrap"
 import {useLocation, useNavigate} from "react-router-dom";
 import {useContext, useState} from "react";
-import {AuthContext} from "../../hoc/AuthProvider";
+import {AuthContext} from "../../../hoc/AuthProvider";
 import {push, ref, set} from "firebase/database";
-import { FileUploader } from "react-drag-drop-files";
-import {  uploadBytes, ref as sRef , getDownloadURL} from "firebase/storage";
+import {FileUploader} from "react-drag-drop-files";
+import {uploadBytes, ref as sRef, getDownloadURL} from "firebase/storage";
 import {useDownloadURL} from "react-firebase-hooks/storage";
+import {CollectionContext} from "../../../hoc/CollectionProvider";
 
 
-const CreateItemUserCollection = ({setCheckItemForm, collectionKey}) => {
+const CreateItem = ({setCheckItemForm, collectionKey, editItem}) => {
+  console.log(editItem)
   const {auth, db, storage} = useContext(AuthContext);
-  const {state} = useLocation()
+  const {imageId, imageTypes} = useContext(CollectionContext);
   const [image, setImage] = useState(null);
   const [checkImage, setCheckImage] = useState(false)
   const [imageName, setImageName] = useState("");
@@ -20,41 +22,10 @@ const CreateItemUserCollection = ({setCheckItemForm, collectionKey}) => {
     value: ""
   });
   const [value] = useDownloadURL(sRef(storage, `images/${imageName}`));
-  const fileTypes = ["JPG", "PNG", "GIF"];
-  const userItemRef = ref(db, "collections/" + auth.currentUser.uid + "/" + collectionKey + "/items");
-  console.log(auth.currentUser.uid);
-
-  const  imageId = () => {
-    let text = "";
-    let possible = "abcdefghijklmnopqrstuvwxyz0123456789";
-    for (let i = 0; i < 17; i++)
-      text += possible.charAt(Math.floor(Math.random() * possible.length));
-    return text;
-  };
-
-  const imageHandlerChange = async (image) => {
-    setImage(image);
-    image ? setCheckImage(true) : setCheckImage(false);
-    const imageRef = await sRef(storage, `images/${imageId()}`);
-    uploadBytes(imageRef, image).then((snapshot) => {
-      setImageName(snapshot.metadata.name);
-    });
-  };
-
-  const createItem = async () => {
-    try {
-      const newItemRef = await push(userItemRef)
-      const newItem = await set(newItemRef, {
-          name: form.name,
-          tag: form.tag,
-          value: form.value,
-          image: value,
-      })
-    } catch (e) {
-      alert(e.message)
-    }
-    setCheckItemForm([]);
-  };
+  const userItemRef = ref(db, `collections/${auth.currentUser.uid}/${collectionKey}/items`);
+  const newItemRef = editItem
+    ? ref(db, `collections/${auth.currentUser.uid}/${collectionKey}/items/${editItem}`)
+    : push(userItemRef);
 
   const handleClose = () => {
     setCheckItemForm([]);
@@ -63,6 +34,35 @@ const CreateItemUserCollection = ({setCheckItemForm, collectionKey}) => {
 
   const handlerChange = (e) => {
     setForm({...form, [e.target.name]: e.target.value});
+  };
+
+  const imageHandlerChange = async (image) => {
+    try {
+      setImage(image);
+      image ? setCheckImage(true) : setCheckImage(false);
+      const imageRef = await sRef(storage, `images/${imageId()}`);
+      uploadBytes(imageRef, image).then((snapshot) => {
+        setImageName(snapshot.metadata.name);
+      });
+    } catch (e) {
+      console.log(e.message)
+    }
+  };
+
+  const createItem = async () => {
+    try {
+
+      const newItem = await set(newItemRef, {
+        name: form.name,
+        tag: form.tag,
+        value: form.value,
+        imageURL: value,
+        imageName: imageName,
+      })
+    } catch (e) {
+      alert(e.message)
+    }
+    setCheckItemForm([]);
   };
 
   return (
@@ -84,10 +84,10 @@ const CreateItemUserCollection = ({setCheckItemForm, collectionKey}) => {
                   handleChange={imageHandlerChange}
                   name="file"
                   disabled={checkImage}
-                  types={fileTypes}
+                  types={imageTypes}
 
                 />
-                <InputGroup className="mb-3" >
+                <InputGroup className="mb-3">
                   <FormControl
                     aria-label="Default"
                     aria-describedby="inputGroup-sizing-default"
@@ -101,7 +101,7 @@ const CreateItemUserCollection = ({setCheckItemForm, collectionKey}) => {
             </Row>
             <Row>
               <Col>
-                <InputGroup className="mb-3" >
+                <InputGroup className="mb-3">
                   <FormControl
                     aria-label="Default"
                     aria-describedby="inputGroup-sizing-default"
@@ -115,7 +115,7 @@ const CreateItemUserCollection = ({setCheckItemForm, collectionKey}) => {
             </Row>
             <Row>
               <Col>
-                <InputGroup className="mb-3" >
+                <InputGroup className="mb-3">
                   <FormControl
                     aria-label="Default"
                     aria-describedby="inputGroup-sizing-default"
@@ -139,4 +139,4 @@ const CreateItemUserCollection = ({setCheckItemForm, collectionKey}) => {
   )
 }
 
-export default CreateItemUserCollection;
+export default CreateItem;
