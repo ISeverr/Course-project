@@ -1,11 +1,11 @@
 //import {Button, Col, Modal} from "react-bootstrap";
-import {Link, useNavigate} from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import {useContext, useState} from "react";
 import {AuthContext} from "../../hoc/AuthProvider";
 import {ref, remove, child} from 'firebase/database';
-import {useListKeys, useListVals, useObjectVal} from "react-firebase-hooks/database";
+import {useListVals} from "react-firebase-hooks/database";
 import _ from "lodash";
-import {Button, Card, Col, Nav, Row, Stack} from "react-bootstrap";
+import {Button, Card, Col, Container, Nav, Row, Stack} from "react-bootstrap";
 import CreateCollection from "./modals/CreateCollection";
 import {ref as sRef, deleteObject} from "firebase/storage";
 
@@ -17,7 +17,7 @@ const UserPage = () => {
   const [collections, loading, error] = useListVals(ref(db, 'collections/' + auth.currentUser.uid), {
     keyField: "collectionKey"
   });
-  const [editCollection, setEditCollection] = useState(null)
+  const [editCollection, setEditCollection] = useState(null);
 
   const deleteCollection = async (data) => {
     try {
@@ -41,7 +41,7 @@ const UserPage = () => {
   };
 
   return (
-    <>
+    <Container>
       <Nav className="justify-content-center my-3">
         <Button onClick={() => visionOfCollectionForm()}>Create collection</Button>
         {checkCollectionForm.edited
@@ -101,7 +101,7 @@ const UserPage = () => {
           </Col>
         ))}
       </Row>
-    </>
+    </Container>
   )
 }
 
