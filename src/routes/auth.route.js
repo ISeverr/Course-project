@@ -8,6 +8,7 @@ import {AuthContext, AuthProvider} from "../hoc/AuthProvider";
 import {useContext} from "react";
 import CreateItem from "./userPage/modals/CreateItem";
 import ItemsPage from "./userPage/ItemsPage";
+import HomePage from "./homepage/HomePage";
 
 
 export const AuthRoute = () => {
@@ -25,7 +26,7 @@ export const AuthRoute = () => {
             <Route path="user-page/create-collection/items" element={<ItemsPage/>}/>
           </>
         )
-        : <Route path="*" element={<NotFoundPage/>}/>
+        : <Route path="*" element={<NotFoundPage />}/>
       }
     </>
   )

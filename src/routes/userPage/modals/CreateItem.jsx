@@ -1,39 +1,53 @@
-import {Button, Col, Container, FormControl, InputGroup, Modal, Row} from "react-bootstrap"
-import {useLocation, useNavigate} from "react-router-dom";
-import {useContext, useState} from "react";
-import {AuthContext} from "../../../hoc/AuthProvider";
-import {push, ref, set} from "firebase/database";
-import {FileUploader} from "react-drag-drop-files";
-import {uploadBytes, ref as sRef, getDownloadURL} from "firebase/storage";
-import {useDownloadURL} from "react-firebase-hooks/storage";
-import {CollectionContext} from "../../../hoc/CollectionProvider";
+import {
+  Button,
+  Col,
+  Container,
+  FormControl,
+  InputGroup,
+  Modal,
+  Row,
+} from "react-bootstrap";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
+import { AuthContext } from "../../../hoc/AuthProvider";
+import { push, ref, set } from "firebase/database";
+import { FileUploader } from "react-drag-drop-files";
+import { uploadBytes, ref as sRef, getDownloadURL } from "firebase/storage";
+import { useDownloadURL } from "react-firebase-hooks/storage";
+import { CollectionContext } from "../../../hoc/CollectionProvider";
 
-
-const CreateItem = ({setCheckItemForm, collectionKey, editItem}) => {
-  console.log(editItem)
-  const {auth, db, storage} = useContext(AuthContext);
-  const {imageId, imageTypes} = useContext(CollectionContext);
+const CreateItem = ({ setCheckItemForm, collectionKey, editItem }) => {
+  console.log(editItem);
+  const { auth, db, storage } = useContext(AuthContext);
+  const { imageId, imageTypes } = useContext(CollectionContext);
   const [image, setImage] = useState(null);
-  const [checkImage, setCheckImage] = useState(false)
+  const [checkImage, setCheckImage] = useState(false);
   const [imageName, setImageName] = useState("");
   const [form, setForm] = useState({
     name: "",
     tag: "",
-    value: ""
+    value: "",
   });
   const [value] = useDownloadURL(sRef(storage, `images/${imageName}`));
-  const userItemRef = ref(db, `collections/${auth.currentUser.uid}/${collectionKey}/items`);
+  const [altValue] = useDownloadURL(sRef(storage, "images/noImage.png"));
+  const userItemRef = ref(
+    db,
+    `collections/${auth.currentUser.uid}/${collectionKey}/items`
+  );
   const newItemRef = editItem
-    ? ref(db, `collections/${auth.currentUser.uid}/${collectionKey}/items/${editItem}`)
+    ? ref(
+        db,
+        `collections/${auth.currentUser.uid}/${collectionKey}/items/${editItem}`
+      )
     : push(userItemRef);
 
   const handleClose = () => {
     setCheckItemForm([]);
-    console.log("close")
+    console.log("close");
   };
 
   const handlerChange = (e) => {
-    setForm({...form, [e.target.name]: e.target.value});
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const imageHandlerChange = async (image) => {
@@ -45,33 +59,28 @@ const CreateItem = ({setCheckItemForm, collectionKey, editItem}) => {
         setImageName(snapshot.metadata.name);
       });
     } catch (e) {
-      console.log(e.message)
+      console.log(e.message);
     }
   };
 
   const createItem = async () => {
     try {
-
-      const newItem = await set(newItemRef, {
+      await set(newItemRef, {
         name: form.name,
         tag: form.tag,
         value: form.value,
-        imageURL: value,
-        imageName: imageName,
-      })
+        imageURL: value ? value : altValue,
+        imageName: imageName ? imageName : null,
+      });
     } catch (e) {
-      alert(e.message)
+      alert(e.message);
     }
     setCheckItemForm([]);
   };
 
   return (
     <>
-      <Modal
-        show={true}
-        onHide={handleClose}
-        backdrop="static"
-      >
+      <Modal show={true} onHide={handleClose} backdrop="static">
         <Modal.Header closeButton>
           <Modal.Title>New Collection</Modal.Title>
         </Modal.Header>
@@ -85,7 +94,6 @@ const CreateItem = ({setCheckItemForm, collectionKey, editItem}) => {
                   name="file"
                   disabled={checkImage}
                   types={imageTypes}
-
                 />
                 <InputGroup className="mb-3">
                   <FormControl
@@ -136,7 +144,7 @@ const CreateItem = ({setCheckItemForm, collectionKey, editItem}) => {
         </Modal.Footer>
       </Modal>
     </>
-  )
-}
+  );
+};
 
 export default CreateItem;

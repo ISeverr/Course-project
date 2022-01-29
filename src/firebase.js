@@ -6,14 +6,14 @@ import { getStorage } from "firebase/storage";
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBMgbU3wrWtohbrN38V1VVaWjGLP7jyAT4",
-  authDomain: "project-course-28eb2.firebaseapp.com",
-  projectId: "project-course-28eb2",
-  databaseURL: "https://project-course-28eb2-default-rtdb.europe-west1.firebasedatabase.app/",
-  storageBucket: "project-course-28eb2.appspot.com",
-  messagingSenderId: "776590484006",
-  appId: "1:776590484006:web:7725b1668d41ed5e1e7ce7",
-  measurementId: "G-DTTBX0H4BQ"
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  databaseURL: process.env.REACT_APP_FIREBASE_DATABASE_URL,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
 };
 
 console.log(firebaseConfig)

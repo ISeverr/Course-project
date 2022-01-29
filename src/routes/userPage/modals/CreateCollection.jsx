@@ -17,21 +17,21 @@ const CreateCollection = ({setCheckCollectionForm, editCollection}) => {
   const [checkImage, setCheckImage] = useState(false)
   const [imageName, setImageName] = useState("");
   const [form, setForm] = useState({
-    name: "",
+    CollectionName: "",
     topic: "",
     description: ""
   });
+  const [showMessage, setShowMessage] = useState(false);
+  const [formerrors, setFormErrors] = useState({});
   const [value] = useDownloadURL(sRef(storage, `images/${imageName}`));
+  const [altValue] = useDownloadURL(sRef(storage, "images/noImage.png"));
   const userCollectionRef = ref(db, `collections/${auth.currentUser.uid}`);
   const newCollectionRef = editCollection
     ? ref(db, `collections/${auth.currentUser.uid}/${editCollection}`)
     : push(userCollectionRef);
-
-  const handlerChange = (e) => {
-    setForm({...form, [e.target.name]: e.target.value});
-  };
-
-  const imageHandlerChange = async (image,) => {
+    const [validated, setValidated] = useState(false);
+ 
+  const imageHandlerChange = async (image) => {
     setImage(image);
     image ? setCheckImage(true) : setCheckImage(false);
     const imageRef = await sRef(storage, `images/${imageId()}`);
@@ -47,8 +47,8 @@ const CreateCollection = ({setCheckCollectionForm, editCollection}) => {
           CollectionName: form.CollectionName,
           topic: form.topic,
           description: form.description,
-          imageURL: value,
-          imageName: imageName,
+          imageURL: value ? value : altValue,
+          imageName: imageName ? imageName : null,
         }
       });
       setCheckCollectionForm({edited: false});
@@ -57,10 +57,39 @@ const CreateCollection = ({setCheckCollectionForm, editCollection}) => {
     }
   };
 
+  const validate = () => {
+    let errors = {};
+
+    if (!form.CollectionName) {
+      errors.email = "Email address is required";
+    }
+
+    if(!form.topic) {
+      errors.password = "Password is required";
+    } 
+
+    if(!form.description) {
+      errors.password = "Password is required";
+    } 
+ 
+    setFormErrors(errors);
+
+    if (Object.keys(errors).length === 0) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   const handleClose = () => {
     setCheckCollectionForm({edited: false});
-    console.log(setCheckCollectionForm)
-    console.log("close")
+  };
+
+   const handlerChange = (e) => {
+    setForm({...form, [e.target.name]: e.target.value});
+    validate(form) 
+    ? setShowMessage(true)
+    : setShowMessage(false)
   };
 
   return (
@@ -92,7 +121,11 @@ const CreateCollection = ({setCheckCollectionForm, editCollection}) => {
                     type="text"
                     placeholder="Enter collection name"
                     onChange={handlerChange}
+                    required
                   />
+                  {formerrors.CollectionName && (
+                    <p className="text-warning">{formerrors.CollectionName}</p>
+                  )}
                 </InputGroup>
               </Col>
             </Row>
@@ -106,13 +139,17 @@ const CreateCollection = ({setCheckCollectionForm, editCollection}) => {
                     type="text"
                     placeholder="Enter collection topic"
                     onChange={handlerChange}
+                    required
                   />
+                   {formerrors.topic && (
+                    <p className="text-warning">{formerrors.topic}</p>
+                  )}
                 </InputGroup>
               </Col>
             </Row>
             <Row>
               <Col>
-                <InputGroup className="mb-3" hasValidation>
+                <InputGroup className="mb-3">
                   <FormControl
                     aria-label="Default"
                     aria-describedby="inputGroup-sizing-default"
@@ -120,7 +157,11 @@ const CreateCollection = ({setCheckCollectionForm, editCollection}) => {
                     type="text"
                     placeholder="Enter collection description"
                     onChange={handlerChange}
+                    required
                   />
+                   {formerrors.description && (
+                    <p className="text-warning">{formerrors.description}</p>
+                  )}
                 </InputGroup>
               </Col>
             </Row>

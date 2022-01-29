@@ -16,7 +16,6 @@ const App = () => {
           <Route index element={<HomePage/>}/>
           <Route path="authorization" element={<AuthForm/>}/>
           {routes}
-          <Route path="*" element={<NotFoundPage/>}/>
         </Route>
       </Routes>
   );
