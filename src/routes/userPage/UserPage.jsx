@@ -1,14 +1,12 @@
-//import {Button, Col, Modal} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../hoc/AuthProvider";
-import { ref, remove, child } from "firebase/database";
+import { ref, remove } from "firebase/database";
 import { useListVals } from "react-firebase-hooks/database";
 import _ from "lodash";
 import { Button, Card, Col, Container, Nav, Row, Stack } from "react-bootstrap";
 import CreateCollection from "./modals/CreateCollection";
 import { ref as sRef, deleteObject } from "firebase/storage";
-import { useDownloadURL } from "react-firebase-hooks/storage";
 import {CARD} from '../../styles/CardStyle'
 
 const UserPage = () => {

@@ -3,7 +3,7 @@ import { ref, remove } from "firebase/database";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../hoc/AuthProvider";
 import _ from "lodash";
-import { Button, Card, Col, Nav, Row, Stack } from "react-bootstrap";
+import { Button, Card, Col, Nav, Row } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import CreateItem from "./modals/CreateItem";
 import { CARD } from "../../styles/CardStyle";
@@ -11,7 +11,7 @@ import { CARD } from "../../styles/CardStyle";
 const ItemsPage = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const { auth, db, storage } = useContext(AuthContext);
+  const { auth, db } = useContext(AuthContext);
   const [itemState, setItemState] = useState({});
   const [checkItemForm, setCheckItemForm] = useState({});
   const [items, loading, error] = useListVals(

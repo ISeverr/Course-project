@@ -1,8 +1,4 @@
-import { createContext, useReducer } from "react";
-import { getAuth } from "firebase/auth";
-import { getDatabase, push, ref, set } from "firebase/database";
-import { AuthContext } from "./AuthProvider";
-import { ref as sRef, uploadBytes } from "firebase/storage";
+import { createContext } from "react";
 import { object, string } from "yup";
 
 export const CollectionContext = createContext(null);

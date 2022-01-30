@@ -2,16 +2,13 @@ import {
   Button,
   Col,
   Container,
-  Form,
   FormControl,
-  InputGroup,
   Modal,
   Row,
 } from "react-bootstrap";
-import { useContext, useEffect, useState } from "react";
+import { useContext,  useState } from "react";
 import { AuthContext } from "../../../hoc/AuthProvider";
-import { useNavigate } from "react-router-dom";
-import { ref, push, set, child } from "firebase/database";
+import { ref, push, set } from "firebase/database";
 import { FileUploader } from "react-drag-drop-files";
 import { uploadBytes, ref as sRef } from "firebase/storage";
 import { useDownloadURL } from "react-firebase-hooks/storage";
