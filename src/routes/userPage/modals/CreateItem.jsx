@@ -15,7 +15,6 @@ import { INPUTGROUP } from "../../../styles/CreateFormStyle";
 import { CollectionContext } from "../../../hoc/CollectionProvider";
 
 const CreateItem = ({ setCheckItemForm, collectionKey, editItem }) => {
-  console.log(editItem);
   const { auth, db, storage } = useContext(AuthContext);
   const { validationItemSchema } = useContext(CollectionContext);
   const userItemRef = ref(

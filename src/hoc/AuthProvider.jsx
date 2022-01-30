@@ -31,7 +31,6 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (auth, email, password, navigate) => {
     try {
-      console.log(email, password)
       await signInWithEmailAndPassword(auth, email, password);
       navigate();
     } catch (error) {
@@ -67,8 +66,6 @@ export const AuthProvider = ({ children }) => {
         console.log(error);
       });
   };
-
-  console.log(auth);
 
   return (
     <AuthContext.Provider

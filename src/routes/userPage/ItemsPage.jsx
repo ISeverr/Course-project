@@ -23,7 +23,6 @@ const ItemsPage = () => {
     if (items) {
       const checkItems = items.filter((item) => !item.hasOwnProperty("topic"));
       setItemState(checkItems[0]);
-      console.log(items);
     }
   }, [items]);
 
@@ -38,8 +37,6 @@ const ItemsPage = () => {
   };
 
   const deleteItem = async ({ item, key }) => {
-    console.log(item);
-    console.log(key);
     try {
       const collectionItemRef = ref(
         db,
