@@ -9,6 +9,7 @@ import { Button, Card, Col, Container, Nav, Row, Stack } from "react-bootstrap";
 import CreateCollection from "./modals/CreateCollection";
 import { ref as sRef, deleteObject } from "firebase/storage";
 import { useDownloadURL } from "react-firebase-hooks/storage";
+import {CARD} from '../../styles/CardStyle'
 
 const UserPage = () => {
   const { auth, db, storage } = useContext(AuthContext);
@@ -74,8 +75,8 @@ const UserPage = () => {
         {!loading &&
           _.map(collections, (collection) => (
             <Col key={collection.collectionKey}>
-              <Card
-                className="mx-3"
+              <CARD
+                className="mx-100 mh-2"
                 border="dark"
                 style={{ maxWidth: "20rem" }}
               >
@@ -88,7 +89,7 @@ const UserPage = () => {
                 />
                 <Card.Body>
                   <Card.Title>{collection.info.CollectionName}</Card.Title>
-                  <Card.Header>{collection.info.topic}</Card.Header>
+                  <Card.Subtitle className="mb-2 text-muted">{collection.info.topic}</Card.Subtitle>
                   <Card.Text>{collection.info.description}</Card.Text>
                   <Button
                     className="me-2"
@@ -116,7 +117,7 @@ const UserPage = () => {
                     Delete collection
                   </Button>
                 </Stack>
-              </Card>
+              </CARD>
             </Col>
           ))}
       </Row>

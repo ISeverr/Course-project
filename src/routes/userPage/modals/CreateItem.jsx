@@ -10,19 +10,14 @@ import {
 import { useContext, useState } from "react";
 import { AuthContext } from "../../../hoc/AuthProvider";
 import { push, ref, set } from "firebase/database";
-import { FieldArray, Formik } from "formik";
+import { Formik } from "formik";
 import { INPUTGROUP } from "../../../styles/CreateFormStyle";
 import { CollectionContext } from "../../../hoc/CollectionProvider";
 
 const CreateItem = ({ setCheckItemForm, collectionKey, editItem }) => {
   console.log(editItem);
   const { auth, db, storage } = useContext(AuthContext);
-  const { validationCreateSchema } = useContext(CollectionContext);
-  const [form, setForm] = useState({
-    name: "",
-    tag: "",
-    value: "",
-  });
+  const { validationItemSchema } = useContext(CollectionContext);
   const userItemRef = ref(
     db,
     `collections/${auth.currentUser.uid}/${collectionKey}/items`
@@ -39,14 +34,12 @@ const CreateItem = ({ setCheckItemForm, collectionKey, editItem }) => {
     console.log("close");
   };
 
-  const createItem = async (name, tag, stringFields, textFields, valueFields) => {
+  const createItem = async (name, tag, description) => {
     try {
       await set(newItemRef, {
         name: name,
         tag: tag,
-        stringFields: stringFields,
-        textFields: textFields,
-        valueFields: valueFields,
+        description: description,
       });
     } catch (e) {
       alert(e.message);
@@ -58,18 +51,16 @@ const CreateItem = ({ setCheckItemForm, collectionKey, editItem }) => {
     <>
       <Modal size="lg" show={true} onHide={handleClose} backdrop="static">
         <Modal.Header closeButton>
-          <Modal.Title>Collection</Modal.Title>
+          <Modal.Title>Item</Modal.Title>
         </Modal.Header>
 
         <Formik
           initialValues={{
             itemName: "",
             tag: "",
-            stringFields: [{ string: "" }],
-            textFields: [{ text: "" }],
-            valueFields: [{ value: 0 }],
+            description: "",
           }}
-          validationSchema={validationCreateSchema}
+          validationSchema={validationItemSchema}
         >
           {({
             values,
@@ -77,7 +68,6 @@ const CreateItem = ({ setCheckItemForm, collectionKey, editItem }) => {
             touched,
             handleChange,
             handleBlur,
-            isValid,
             dirty,
           }) => (
             <>
@@ -87,7 +77,7 @@ const CreateItem = ({ setCheckItemForm, collectionKey, editItem }) => {
                     <Col>
                       <INPUTGROUP className="mb-4">
                         <FormControl
-                          name="itemName"
+                          name="itemName" 
                           type="text"
                           placeholder="Enter item name"
                           onChange={handleChange}
@@ -102,6 +92,8 @@ const CreateItem = ({ setCheckItemForm, collectionKey, editItem }) => {
                         ) : null}
                       </INPUTGROUP>
                     </Col>
+                  </Row>
+                  <Row>
                     <Col>
                       <INPUTGROUP className="mb-4">
                         <FormControl
@@ -121,104 +113,19 @@ const CreateItem = ({ setCheckItemForm, collectionKey, editItem }) => {
                   </Row>
                   <Row>
                     <Col>
-                      <INPUTGROUP className="mb-3">
-                        <FieldArray name="stringFields">
-                          {({ push, remove }) => (
-                            <Row>
-                              <INPUTGROUP>test array fields</INPUTGROUP>
-                              {values.stringFields.map((_, index) => (
-                                <Row>
-                                  <Col>
-                                    <FormControl
-                                      name={`stringFields[${index}].string`}
-                                      type="text"
-                                      onChange={handleChange}
-                                      value={values.name}
-                                    />
-                                  </Col>
-                                  <Col>
-                                    <Button onClick={() => remove(index)}>
-                                      Delete
-                                    </Button>
-                                  </Col>
-                                </Row>
-                              ))}
-                              <Col>
-                                <Button onClick={() => push({ string: "" })}>
-                                  Add
-                                </Button>
-                              </Col>
-                            </Row>
-                          )}
-                        </FieldArray>
-                      </INPUTGROUP>
-                    </Col>
-                    <Col>
-                      <INPUTGROUP className="mb-3">
-                        <FieldArray name="textFields">
-                          {({ push, remove }) => (
-                            <Row>
-                              <INPUTGROUP>test array fields</INPUTGROUP>
-                              {values.textFields.map((_, index) => (
-                                <Row>
-                                  <Col>
-                                    <FormControl
-                                      name={`textFields[${index}].text`}
-                                      type="text"
-                                      onChange={handleChange}
-                                      value={values.name}
-                                    />
-                                  </Col>
-                                  <Col>
-                                    <Button onClick={() => remove(index)}>
-                                      Delete
-                                    </Button>
-                                  </Col>
-                                </Row>
-                              ))}
-                              <Col>
-                                <Button onClick={() => push({ text: "" })}>
-                                  Add
-                                </Button>
-                              </Col>
-                            </Row>
-                          )}
-                        </FieldArray>
-                      </INPUTGROUP>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col>
-                      <INPUTGROUP className="mb-3">
-                        <FieldArray name="valueFields">
-                          {({ push, remove }) => (
-                            <Row>
-                              <INPUTGROUP>test array fields</INPUTGROUP>
-                              {values.valueFields.map((_, index) => (
-                                <Row>
-                                  <Col>
-                                    <FormControl
-                                      name={`valueFields[${index}].value`}
-                                      type="value"
-                                      onChange={handleChange}
-                                      value={values.name}
-                                    />
-                                  </Col>
-                                  <Col className="md-auto">
-                                    <Button onClick={() => remove(index)}>
-                                      Delete
-                                    </Button>
-                                  </Col>
-                                </Row>
-                              ))}
-                              <Col>
-                                <Button onClick={() => push({ value: "" })}>
-                                  Add
-                                </Button>
-                              </Col>
-                            </Row>
-                          )}
-                        </FieldArray>
+                      <INPUTGROUP className="mb-4">
+                        <FormControl
+                          name="description"
+                          type="text"
+                          placeholder="Enter item description"
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          value={values.description}
+                          className={touched.description && errors.description ? "error" : null}
+                        />
+                        {touched.description && errors.description ? (
+                          <div className="error-message">{errors.description}</div>
+                        ) : null}
                       </INPUTGROUP>
                     </Col>
                   </Row>
@@ -229,7 +136,11 @@ const CreateItem = ({ setCheckItemForm, collectionKey, editItem }) => {
                   variant="outline-primary"
                   disabled={!errors.values && !dirty}
                   onClick={() =>
-                    createItem(values.itemName, values.tag, values.stringFields, values.textFields, values.valueFields)
+                    createItem(
+                      values.itemName,
+                      values.tag,
+                      values.description
+                    )
                   }
                 >
                   Create

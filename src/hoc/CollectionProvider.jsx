@@ -10,9 +10,15 @@ export const CollectionContext = createContext(null);
 export const CollectionProvider = ({ children }) => {
   const imageTypes = ["JPG", "PNG", "GIF"];
 
-  const validationCreateSchema = object({
+  const validationCollectionSchema = object({
     CollectionName: string().required("*CollectionName is reuired"),
     topic: string().required("*Topic is reuired"),
+    description: string().required("*Description is reuired"),
+  });
+
+  const validationItemSchema = object({
+    itemName: string().required("*CollectionName is reuired"),
+    tag: string().required("*Topic is reuired"),
     description: string().required("*Description is reuired"),
   });
 
@@ -26,7 +32,7 @@ export const CollectionProvider = ({ children }) => {
 
   return (
     <CollectionContext.Provider
-      value={{ imageId, imageTypes, validationCreateSchema }}
+      value={{ imageId, imageTypes, validationCollectionSchema, validationItemSchema }}
     >
       {children}
     </CollectionContext.Provider>

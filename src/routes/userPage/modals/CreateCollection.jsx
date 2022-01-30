@@ -21,7 +21,7 @@ import { INPUTGROUP } from "../../../styles/CreateFormStyle";
 
 const CreateCollection = ({ setCheckCollectionForm, editCollection }) => {
   const { auth, db, storage } = useContext(AuthContext);
-  const { imageId, fileTypes, validationCreateSchema } =
+  const { imageId, fileTypes, validationCollectionSchema } =
     useContext(CollectionContext);
   const [image, setImage] = useState(null);
   const [checkImage, setCheckImage] = useState(false);
@@ -79,9 +79,9 @@ const CreateCollection = ({ setCheckCollectionForm, editCollection }) => {
             topic: "",
             description: "",
           }}
-          validationSchema={validationCreateSchema}
+          validationSchema={validationCollectionSchema}
         >
-          {({ values, errors, touched, handleChange, handleBlur, isValid, dirty }) => (
+          {({ values, errors, touched, handleChange, handleBlur,  dirty }) => (
             <>
               <Modal.Body>
                 <Container>

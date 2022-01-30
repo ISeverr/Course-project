@@ -6,7 +6,7 @@ import _ from "lodash";
 import { Button, Card, Col, Nav, Row, Stack } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import CreateItem from "./modals/CreateItem";
-import { deleteObject, ref as sRef } from "firebase/storage";
+import { CARD } from "../../styles/CardStyle";
 
 const ItemsPage = () => {
   const { state } = useLocation();
@@ -76,15 +76,15 @@ const ItemsPage = () => {
         {!loading &&
           _.map(itemState, (item, key) => (
             <Col key={key}>
-              <Card
+              <CARD
                 className="mx-3 "
                 border="dark"
                 style={{ maxWidth: "20rem" }}
               >
                 <Card.Body>
                   <Card.Title>{item.name}</Card.Title>
-                  <Card.Header>{item.tag}</Card.Header>
-                  <Card.Text>{item.value}</Card.Text>
+                  <Card.Subtitle className="mb-2 text-muted">{item.tag}</Card.Subtitle>
+                  <Card.Text>{item.description}</Card.Text>
                   <Button
                     className="me-2"
                     variant="outline-danger"
@@ -96,7 +96,7 @@ const ItemsPage = () => {
                     Edit item
                   </Button>
                 </Card.Body>
-              </Card>
+              </CARD>
             </Col>
           ))}
       </Row>

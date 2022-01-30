@@ -4,6 +4,7 @@ import { useListVals} from "react-firebase-hooks/database";
 import {ref} from "firebase/database";
 import _ from 'lodash';
 import { Card, Col, Container, Row, Stack} from "react-bootstrap";
+import {CARD} from '../../styles/CardStyle'
 
 
 const HomePage = () => {
@@ -28,19 +29,19 @@ const HomePage = () => {
           _.map(collections, (collection) => (
             _.map(collection, (items, key) => (
               <Col key={key}>
-                <Card
+                <CARD
                   className="mx-3"
                   border="dark"
                   style={{maxWidth: '20rem'}}
                 >
                   <Card.Body>
                     <Card.Title>{items.name}</Card.Title>
-                    <Card.Header>{items.tag}</Card.Header>
+                    <Card.Subtitle className="mb-2 text-muted">{items.tag}</Card.Subtitle>
                     <Card.Text>{items.value}</Card.Text>
                   </Card.Body>
                   <Stack className="col-md-6 mx-auto mb-3">
                   </Stack>
-                </Card>
+                </CARD>
               </Col>
             ))
           ))
