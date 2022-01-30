@@ -7,29 +7,22 @@ import {
   Modal,
   Row,
 } from "react-bootstrap";
-import { useLocation, useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../../hoc/AuthProvider";
 import { push, ref, set } from "firebase/database";
-import { FileUploader } from "react-drag-drop-files";
-import { uploadBytes, ref as sRef, getDownloadURL } from "firebase/storage";
-import { useDownloadURL } from "react-firebase-hooks/storage";
+import { FieldArray, Formik } from "formik";
+import { INPUTGROUP } from "../../../styles/CreateFormStyle";
 import { CollectionContext } from "../../../hoc/CollectionProvider";
 
 const CreateItem = ({ setCheckItemForm, collectionKey, editItem }) => {
   console.log(editItem);
   const { auth, db, storage } = useContext(AuthContext);
-  const { imageId, imageTypes } = useContext(CollectionContext);
-  const [image, setImage] = useState(null);
-  const [checkImage, setCheckImage] = useState(false);
-  const [imageName, setImageName] = useState("");
+  const { validationCreateSchema } = useContext(CollectionContext);
   const [form, setForm] = useState({
     name: "",
     tag: "",
     value: "",
   });
-  const [value] = useDownloadURL(sRef(storage, `images/${imageName}`));
-  const [altValue] = useDownloadURL(sRef(storage, "images/noImage.png"));
   const userItemRef = ref(
     db,
     `collections/${auth.currentUser.uid}/${collectionKey}/items`
@@ -46,31 +39,14 @@ const CreateItem = ({ setCheckItemForm, collectionKey, editItem }) => {
     console.log("close");
   };
 
-  const handlerChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const imageHandlerChange = async (image) => {
-    try {
-      setImage(image);
-      image ? setCheckImage(true) : setCheckImage(false);
-      const imageRef = await sRef(storage, `images/${imageId()}`);
-      uploadBytes(imageRef, image).then((snapshot) => {
-        setImageName(snapshot.metadata.name);
-      });
-    } catch (e) {
-      console.log(e.message);
-    }
-  };
-
-  const createItem = async () => {
+  const createItem = async (name, tag, stringFields, textFields, valueFields) => {
     try {
       await set(newItemRef, {
-        name: form.name,
-        tag: form.tag,
-        value: form.value,
-        imageURL: value ? value : altValue,
-        imageName: imageName ? imageName : null,
+        name: name,
+        tag: tag,
+        stringFields: stringFields,
+        textFields: textFields,
+        valueFields: valueFields,
       });
     } catch (e) {
       alert(e.message);
@@ -80,68 +56,188 @@ const CreateItem = ({ setCheckItemForm, collectionKey, editItem }) => {
 
   return (
     <>
-      <Modal show={true} onHide={handleClose} backdrop="static">
+      <Modal size="lg" show={true} onHide={handleClose} backdrop="static">
         <Modal.Header closeButton>
-          <Modal.Title>New Collection</Modal.Title>
+          <Modal.Title>Collection</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          <Container>
-            <Row>
-              <Col>
-                <FileUploader
-                  className="mb-3"
-                  handleChange={imageHandlerChange}
-                  name="file"
-                  disabled={checkImage}
-                  types={imageTypes}
-                />
-                <InputGroup className="mb-3">
-                  <FormControl
-                    aria-label="Default"
-                    aria-describedby="inputGroup-sizing-default"
-                    name="name"
-                    type="text"
-                    placeholder="Enter item name"
-                    onChange={handlerChange}
-                  />
-                </InputGroup>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <InputGroup className="mb-3">
-                  <FormControl
-                    aria-label="Default"
-                    aria-describedby="inputGroup-sizing-default"
-                    name="tag"
-                    type="text"
-                    placeholder="Enter item tag"
-                    onChange={handlerChange}
-                  />
-                </InputGroup>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <InputGroup className="mb-3">
-                  <FormControl
-                    aria-label="Default"
-                    aria-describedby="inputGroup-sizing-default"
-                    name="value"
-                    type="number"
-                    placeholder="Enter item value"
-                    onChange={handlerChange}
-                  />
-                </InputGroup>
-              </Col>
-            </Row>
-          </Container>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="outline-primary" onClick={createItem}>
-            Create
-          </Button>
-        </Modal.Footer>
+
+        <Formik
+          initialValues={{
+            itemName: "",
+            tag: "",
+            stringFields: [{ string: "" }],
+            textFields: [{ text: "" }],
+            valueFields: [{ value: 0 }],
+          }}
+          validationSchema={validationCreateSchema}
+        >
+          {({
+            values,
+            errors,
+            touched,
+            handleChange,
+            handleBlur,
+            isValid,
+            dirty,
+          }) => (
+            <>
+              <Modal.Body>
+                <Container>
+                  <Row>
+                    <Col>
+                      <INPUTGROUP className="mb-4">
+                        <FormControl
+                          name="itemName"
+                          type="text"
+                          placeholder="Enter item name"
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          value={values.itemName}
+                          className={
+                            touched.itemName && errors.itemName ? "error" : null
+                          }
+                        />
+                        {touched.itemName && errors.itemName ? (
+                          <div className="error-message">{errors.itemName}</div>
+                        ) : null}
+                      </INPUTGROUP>
+                    </Col>
+                    <Col>
+                      <INPUTGROUP className="mb-4">
+                        <FormControl
+                          name="tag"
+                          type="text"
+                          placeholder="Enter item tag"
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          value={values.tag}
+                          className={touched.tag && errors.tag ? "error" : null}
+                        />
+                        {touched.tag && errors.tag ? (
+                          <div className="error-message">{errors.tag}</div>
+                        ) : null}
+                      </INPUTGROUP>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <INPUTGROUP className="mb-3">
+                        <FieldArray name="stringFields">
+                          {({ push, remove }) => (
+                            <Row>
+                              <INPUTGROUP>test array fields</INPUTGROUP>
+                              {values.stringFields.map((_, index) => (
+                                <Row>
+                                  <Col>
+                                    <FormControl
+                                      name={`stringFields[${index}].string`}
+                                      type="text"
+                                      onChange={handleChange}
+                                      value={values.name}
+                                    />
+                                  </Col>
+                                  <Col>
+                                    <Button onClick={() => remove(index)}>
+                                      Delete
+                                    </Button>
+                                  </Col>
+                                </Row>
+                              ))}
+                              <Col>
+                                <Button onClick={() => push({ string: "" })}>
+                                  Add
+                                </Button>
+                              </Col>
+                            </Row>
+                          )}
+                        </FieldArray>
+                      </INPUTGROUP>
+                    </Col>
+                    <Col>
+                      <INPUTGROUP className="mb-3">
+                        <FieldArray name="textFields">
+                          {({ push, remove }) => (
+                            <Row>
+                              <INPUTGROUP>test array fields</INPUTGROUP>
+                              {values.textFields.map((_, index) => (
+                                <Row>
+                                  <Col>
+                                    <FormControl
+                                      name={`textFields[${index}].text`}
+                                      type="text"
+                                      onChange={handleChange}
+                                      value={values.name}
+                                    />
+                                  </Col>
+                                  <Col>
+                                    <Button onClick={() => remove(index)}>
+                                      Delete
+                                    </Button>
+                                  </Col>
+                                </Row>
+                              ))}
+                              <Col>
+                                <Button onClick={() => push({ text: "" })}>
+                                  Add
+                                </Button>
+                              </Col>
+                            </Row>
+                          )}
+                        </FieldArray>
+                      </INPUTGROUP>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <INPUTGROUP className="mb-3">
+                        <FieldArray name="valueFields">
+                          {({ push, remove }) => (
+                            <Row>
+                              <INPUTGROUP>test array fields</INPUTGROUP>
+                              {values.valueFields.map((_, index) => (
+                                <Row>
+                                  <Col>
+                                    <FormControl
+                                      name={`valueFields[${index}].value`}
+                                      type="value"
+                                      onChange={handleChange}
+                                      value={values.name}
+                                    />
+                                  </Col>
+                                  <Col className="md-auto">
+                                    <Button onClick={() => remove(index)}>
+                                      Delete
+                                    </Button>
+                                  </Col>
+                                </Row>
+                              ))}
+                              <Col>
+                                <Button onClick={() => push({ value: "" })}>
+                                  Add
+                                </Button>
+                              </Col>
+                            </Row>
+                          )}
+                        </FieldArray>
+                      </INPUTGROUP>
+                    </Col>
+                  </Row>
+                </Container>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button
+                  variant="outline-primary"
+                  disabled={!errors.values && !dirty}
+                  onClick={() =>
+                    createItem(values.itemName, values.tag, values.stringFields, values.textFields, values.valueFields)
+                  }
+                >
+                  Create
+                </Button>
+              </Modal.Footer>
+            </>
+          )}
+        </Formik>
       </Modal>
     </>
   );

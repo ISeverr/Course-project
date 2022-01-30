@@ -33,13 +33,6 @@ const HomePage = () => {
                   border="dark"
                   style={{maxWidth: '20rem'}}
                 >
-                  <Card.Img
-                    variant="top"
-                    style={{maxHeight: '20rem'}}
-                    className="img-thumbnail"
-                    src={items.imageURL}
-                    alt="..."
-                  />
                   <Card.Body>
                     <Card.Title>{items.name}</Card.Title>
                     <Card.Header>{items.tag}</Card.Header>

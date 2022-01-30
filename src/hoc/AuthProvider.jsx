@@ -5,13 +5,12 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { collection, doc, getDocs, setDoc } from "@firebase/firestore";
-import { database } from "../firebase";
-import { useAuthState } from "react-firebase-hooks/auth";
 import { getDatabase, ref, set } from "firebase/database";
 import { getStorage } from "firebase/storage";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { object, string } from "yup";
+
 
 export const AuthContext = createContext(null);
 
@@ -21,8 +20,18 @@ export const AuthProvider = ({ children }) => {
   const db = getDatabase();
   const storage = getStorage();
 
+  const validationAuthSchema = object({
+    email: string()
+      .email("*Must be a valid email address")
+      .required("*Email is reuired"),
+    password: string()
+      .min(6, "*Password must have at least 6 characters")
+      .required("*Password is reuired"),
+  });
+
   const login = async (auth, email, password, navigate) => {
     try {
+      console.log(email, password)
       await signInWithEmailAndPassword(auth, email, password);
       navigate();
     } catch (error) {
@@ -63,7 +72,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ auth, login, registration, logout, user, db, storage }}
+      value={{ auth, login, registration, logout, user, db, storage, validationAuthSchema }}
     >
       {children}
     </AuthContext.Provider>

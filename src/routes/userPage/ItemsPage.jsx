@@ -46,10 +46,6 @@ const ItemsPage = () => {
         `collections/${auth.currentUser.uid}/${state}/items/${key}`
       );
       await remove(collectionItemRef);
-      const imageRef = sRef(storage, `images/${item.imageName}`);
-      if (!imageRef === "images/undefined") {
-        await deleteObject(imageRef);
-      }
     } catch (e) {
       console.log(e);
     }
@@ -85,13 +81,6 @@ const ItemsPage = () => {
                 border="dark"
                 style={{ maxWidth: "20rem" }}
               >
-                <Card.Img
-                  variant="top"
-                  style={{ maxHeight: "20rem" }}
-                  className="img-thumbnail"
-                  src={item.imageURL}
-                  alt="..."
-                />
                 <Card.Body>
                   <Card.Title>{item.name}</Card.Title>
                   <Card.Header>{item.tag}</Card.Header>
