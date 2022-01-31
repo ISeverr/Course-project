@@ -169,8 +169,8 @@ const CreateCollection = ({ setCheckCollectionForm, editCollection }) => {
                   onClick={() =>
                     createCollection(
                       values.CollectionName,
-                      values.description,
-                      values.topic
+                      values.topic,
+                      values.description
                     )
                   }
                 >

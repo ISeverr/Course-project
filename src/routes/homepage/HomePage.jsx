@@ -37,7 +37,7 @@ const HomePage = () => {
                   <Card.Body>
                     <Card.Title>{items.name}</Card.Title>
                     <Card.Subtitle className="mb-2 text-muted">{items.tag}</Card.Subtitle>
-                    <Card.Text>{items.value}</Card.Text>
+                    <Card.Text>{items.description}</Card.Text>
                   </Card.Body>
                   <Stack className="col-md-6 mx-auto mb-3">
                   </Stack>
